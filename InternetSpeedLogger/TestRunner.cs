@@ -6,6 +6,8 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -26,9 +28,13 @@ namespace InternetSpeedLogger
         private System.Timers.Timer _timer;
         private readonly Func<Task> Execute;
         private readonly bool _silent;
+        private readonly string _pathToSpeedtestCli;
 
         public TestRunner(TestRunnerOptions options)
         {
+            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            _pathToSpeedtestCli = config.AppSettings.Settings["SpeedtestPath"].Value;
+
             _options = options;
             _silent = options.Silent;
 
@@ -95,7 +101,7 @@ namespace InternetSpeedLogger
             {
                 using (var proc = new Process())
                 {
-                    var info = new ProcessStartInfo("speedtest-cli.exe");
+                    var info = new ProcessStartInfo(_pathToSpeedtestCli);
                     info.Arguments = "--json";
                     info.UseShellExecute = false;
                     info.RedirectStandardOutput = true;
@@ -109,6 +115,12 @@ namespace InternetSpeedLogger
             catch (Exception e)
             {
                 Console.WriteLine($"Something went wrong with the speedtest. {DateTime.Now:T}.  Message: {e.Message}");
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(jsonResult))
+            {
+                Console.WriteLine($"Something went wrong with the speedtest. {DateTime.Now:T}.  The results were empty. Please ensure that you have Python installed.");
                 return null;
             }
 
