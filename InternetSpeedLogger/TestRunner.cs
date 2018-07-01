@@ -11,6 +11,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace InternetSpeedLogger
@@ -32,6 +33,10 @@ namespace InternetSpeedLogger
 
         public TestRunner(TestRunnerOptions options)
         {
+            _options.CancellationToken.Register(() => {
+                _timer?.Stop();
+            });
+
             var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             _pathToSpeedtestCli = config.AppSettings.Settings["SpeedtestPath"].Value;
 
@@ -44,7 +49,7 @@ namespace InternetSpeedLogger
                 _timer.AutoReset = true;
                 _timer.Elapsed += async (_, __) =>
                 {
-                    if (_options.MaxRuns > 0 && ++_runCounter > _options.MaxRuns)
+                    if (_options.CancellationToken.IsCancellationRequested || (_options.MaxRuns > 0 && ++_runCounter > _options.MaxRuns))
                     {
                         _timer.Stop();
                         TestsComplete?.Invoke(this, EventArgs.Empty);
@@ -54,7 +59,7 @@ namespace InternetSpeedLogger
                 };
             }
 
-            if (_options.ResultRepository != null)
+            if (_options.ResultRepository != null && !_options.CancellationToken.IsCancellationRequested)
             {
                 Execute = async () =>
                 {
@@ -86,12 +91,15 @@ namespace InternetSpeedLogger
                     tcs.SetResult(Task.CompletedTask);
                 };
                 _timer.Start();
-                await tcs.Task; 
+                await tcs.Task;
             }
         }
 
         private async Task<Models.Result> RunSpeedtest()
         {
+            if (_options.CancellationToken.IsCancellationRequested)
+                return null;
+
             if (!_silent)
                 Console.WriteLine("Begin speed test");
 

@@ -5,18 +5,20 @@
 
 using InternetSpeedLogger.Database;
 using System;
+using System.Threading;
 
 namespace InternetSpeedLogger
 {
     public class TestRunnerOptions
     {
-        public TestRunnerOptions(bool silent, IResultRepository resultRepository, TimeSpan frequency, int maxRuns, bool hideResults)
+        public TestRunnerOptions(bool silent, IResultRepository resultRepository, TimeSpan frequency, int maxRuns, bool hideResults, CancellationToken cancellationToken)
         {
             Silent = silent;
             ResultRepository = resultRepository;
             Frequency = frequency;
             MaxRuns = maxRuns;
             HideResults = hideResults;
+            CancellationToken = cancellationToken;
         }
 
         public TestRunnerOptions()
@@ -29,6 +31,6 @@ namespace InternetSpeedLogger
         public TimeSpan Frequency { get; set; }
         public int MaxRuns { get; set; }
         public bool HideResults { get; set; }
-
+        public CancellationToken CancellationToken { get; set; }
     }
 }

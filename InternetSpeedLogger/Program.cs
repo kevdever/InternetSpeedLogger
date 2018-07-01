@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Test.CommandLineParsing;
 using Newtonsoft;
@@ -36,6 +37,14 @@ namespace InternetSpeedLogger
 
         static async Task Main(string[] args)
         {
+            var cancelTokenSource = new CancellationTokenSource();
+
+            Console.CancelKeyPress += (o, e) =>
+            {
+                Console.WriteLine("Cancelling...");
+                cancelTokenSource.Cancel();
+            };
+
             var parsedArgs = new CommandLineArguments();
             CommandLineParser.ParseArguments(parsedArgs, args);
 
@@ -50,6 +59,7 @@ namespace InternetSpeedLogger
             options.Silent = parsedArgs.Silent == true ? true : false;
             options.HideResults = parsedArgs.HideResults == true ? true : false;
             options.ResultRepository = parsedArgs.PersistResults == true ? new Database.ResultRepository() : null;
+            options.CancellationToken = cancelTokenSource.Token;
 
             string intervalStr = "";
 
