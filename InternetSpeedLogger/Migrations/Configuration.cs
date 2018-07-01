@@ -18,6 +18,13 @@ namespace InternetSpeedLogger.Migrations
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data.
+            
+            //Execute ReportsView.sql to generate a view that displays the most recent test results in mb/s.
+            string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+            UriBuilder uri = new UriBuilder(codeBase);
+            string path = Uri.UnescapeDataString(uri.Path);
+            var baseDir = Path.GetDirectoryName(path) + "\\Migrations\\ReportsView.sql";
+            context.Database.ExecuteSqlCommand(File.ReadAllText(baseDir));
         }
     }
 }
