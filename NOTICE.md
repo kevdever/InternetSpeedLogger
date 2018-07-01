@@ -1,1 +1,0 @@
-speedtest-cli.exe [speedtest-cli](https://github.com/sivel/speedtest-cli) by [sivel](https://github.com/sivel) is licensed under Apache 2.0
