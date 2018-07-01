@@ -70,9 +70,9 @@ namespace InternetSpeedLogger
 
         public async Task Begin()
         {
-            if (_timer is null)
-                await Execute().ConfigureAwait(false);
-            else
+            await Execute().ConfigureAwait(false);
+
+            if (_timer != null)
             {
                 var tcs = new TaskCompletionSource<Task>();
                 TestsComplete += (_, __) =>

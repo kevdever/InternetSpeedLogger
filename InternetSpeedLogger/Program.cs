@@ -88,6 +88,13 @@ namespace InternetSpeedLogger
                 options.MaxRuns = (int)parsedArgs.MaxRuns;
             }
 
+            var intervalStr = $" Speed tests will be run at intervals of {options.Frequency.ToString("h'h 'm'm 's's'")}{(options.MaxRuns > 0 ? $" a total of {options.MaxRuns} times" : "until you terminate this program")}.";
+            var resultsStr = $" Results will {(options.ResultRepository is null ? "not " : "")}be saved to the database.";
+            var displayStr = $" Results will {(options.HideResults ? "not " : "")}be displayed";
+            var quietStr = $" Silent mode is {(options.Silent ? "" : "not ")}activated";
+
+            Console.WriteLine($"Welcome." + intervalStr + resultsStr + displayStr + quietStr);
+
             using (var testRunner = new TestRunner(options))
                 await testRunner.Begin();
 

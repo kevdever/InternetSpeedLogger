@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Copyright 2018 KevDever 
+ * See LICENSE.md
+ */
+
+
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
