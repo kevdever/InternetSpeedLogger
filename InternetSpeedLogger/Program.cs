@@ -79,6 +79,12 @@ namespace InternetSpeedLogger
                         Console.WriteLine("Only positive integers supported within Frequency argument");
                         return;
                     }
+                    else if (frequencySpecs[0] > 23 || frequencySpecs[1] > 59 || frequencySpecs[2] > 59)
+                    {
+                        Console.WriteLine("Invalid time arguments. Max values allowed: 23:59:59");
+                        return;
+                    }
+
                     options.Frequency = new TimeSpan(frequencySpecs[0], frequencySpecs[1], frequencySpecs[2]);
                 }
                 catch
