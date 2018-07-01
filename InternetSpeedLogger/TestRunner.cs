@@ -86,7 +86,7 @@ namespace InternetSpeedLogger
                     tcs.SetResult(Task.CompletedTask);
                 };
                 _timer.Start();
-                await tcs.Task;
+                await tcs.Task; 
             }
         }
 
@@ -102,7 +102,7 @@ namespace InternetSpeedLogger
                 using (var proc = new Process())
                 {
                     var info = new ProcessStartInfo(_pathToSpeedtestCli);
-                    info.Arguments = "--json";
+                    info.Arguments = "--json --bytes";
                     info.UseShellExecute = false;
                     info.RedirectStandardOutput = true;
                     info.RedirectStandardError = true;
@@ -120,7 +120,7 @@ namespace InternetSpeedLogger
 
             if (string.IsNullOrEmpty(jsonResult))
             {
-                Console.WriteLine($"Something went wrong with the speedtest. {DateTime.Now:T}.  The results were empty. Please ensure that you have Python installed.");
+                Console.WriteLine($"Something went wrong with the speedtest. {DateTime.Now:T}.  The results were empty. Please ensure that you have Python installed and that the program has access to the internet.");
                 return null;
             }
 
