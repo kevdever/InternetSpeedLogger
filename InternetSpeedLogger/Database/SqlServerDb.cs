@@ -1,8 +1,14 @@
+/*
+ * Copyright 2018 KevDever 
+ * See LICENSE.md
+ */
+
 namespace InternetSpeedLogger.Database
 {
     using System;
     using System.Data.Entity;
     using System.Linq;
+    using Models;
 
     public class SqlServerDb : DbContext
     {

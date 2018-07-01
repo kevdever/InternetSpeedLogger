@@ -1,6 +1,6 @@
 ﻿/*
  * Copyright 2018 KevDever 
- * 
+ * See LICENSE.md
  */
 
 using System;
@@ -9,43 +9,89 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Test.CommandLineParsing;
 using Newtonsoft;
 using Newtonsoft.Json;
 
 namespace InternetSpeedLogger
 {
+    public class CommandLineArguments
+    {
+        public bool? Silent { get; set; }
+        public bool? HideResults { get; set; }
+        public bool? PersistResults { get; set; }
+        public string Frequency { get; set; }
+        public int? MaxRuns { get; set; }
+        public bool? Help { get; set; }
+    }
+
     class Program
     {
+        static string HelpInfo = @"Options: 
+/Silent suppresses status messages. 
+/HidesResults suppresses the speedtest results. 
+/PersistResults saves the speedtest results to the database. 
+/Frequency=HH:MM:SS specifies that the speedtest repeats at the specified interval.
+/MaxRuns={number} lets you specify the maximum number of times the test will run, if you specified a Frequency.";
+
         static async Task Main(string[] args)
         {
-            Console.WriteLine("testing ");
+            var parsedArgs = new CommandLineArguments();
+            CommandLineParser.ParseArguments(parsedArgs, args);
 
-            var proc = new Process();
-            var info = new ProcessStartInfo("speedtest-cli.exe");
-            info.Arguments = "--json";
-            info.UseShellExecute = false;
-            info.RedirectStandardOutput = true;
-            info.RedirectStandardError = true;
-            proc.StartInfo = info;
-            proc.Start();
-            var output = await proc.StandardOutput.ReadToEndAsync();
-            var obj = JsonConvert.DeserializeObject<dynamic>(output);
-            Console.WriteLine("results: ");
-            foreach (var item in obj)
+            if (parsedArgs.Help == true)
             {
-                Console.WriteLine($"{item.Name}: {item.Value}");
+                Console.WriteLine(HelpInfo);
+                return;
             }
 
+            var options = new TestRunnerOptions();
 
-            var res = JsonConvert.DeserializeObject<Result>(output);
+            options.Silent = parsedArgs.Silent == true ? true : false;
+            options.HideResults = parsedArgs.HideResults == false ? false : true;
+            options.ResultRepository = parsedArgs.PersistResults == true ? new Database.ResultRepository() : null;
 
-            using (var context = new Database.SqlServerDb())
+            if (parsedArgs.Frequency != null)
             {
-                context.Results.Add(res);
-                await context.SaveChangesAsync();
+                var components = parsedArgs.Frequency.Split(':');
+                if (components.Count() != 3)
+                {
+                    Console.WriteLine("the Frequency argument must be of the form HH:MM:SS, such as /Frequency=3:15:00 to repeat every 3 hours 15 minutes.");
+                    return;
+                }
+                try
+                {
+                    var frequencySpecs = components.Select(n => int.Parse(n)).ToArray();
+                    if (frequencySpecs.Any(i => i < 0))
+                    {
+                        Console.WriteLine("Only positive integers supported within Frequency argument");
+                        return;
+                    }
+
+
+                    options.Frequency = new TimeSpan(frequencySpecs[0], frequencySpecs[1], frequencySpecs[2]);
+                }
+                catch
+                {
+                    Console.WriteLine("Something went wrong interpreting the Frequency argument. Please see the /help.");
+                    return;
+                }
             }
 
+            if (parsedArgs.MaxRuns != null)
+            {
+                if (parsedArgs.MaxRuns < 0)
+                {
+                    Console.WriteLine("Max Runs argument must be greater than 0");
+                    return;
+                }
+                options.MaxRuns = (int)parsedArgs.MaxRuns;
+            }
 
+            using (var testRunner = new TestRunner(options))
+                await testRunner.Begin();
+
+            Console.WriteLine("All tests complete. Press any key to exit...");
             Console.ReadKey();
         }
     }
