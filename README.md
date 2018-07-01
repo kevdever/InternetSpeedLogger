@@ -10,4 +10,5 @@ This project is licensed under the Apache 2.0 license.  See License.md.
 * [speedtest-cli](https://github.com/sivel/speedtest-cli)
 
 # Setup
-In App.config, under appSettings, update the path to speedtest-cli as appropriate
+* In App.config, under appSettings, update the path to speedtest-cli as appropriate
+* In package manager console, run update-database to generate the database in your localdb instance
