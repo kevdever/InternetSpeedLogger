@@ -29,9 +29,9 @@ namespace InternetSpeedLogger
     {
         static string HelpInfo = @"Options: 
 /Silent suppresses status messages. 
-/HidesResults suppresses the speedtest results. 
+/HideResults suppresses the speedtest results. 
 /PersistResults saves the speedtest results to the database. 
-/Frequency=HH:MM:SS specifies that the speedtest repeats at the specified interval.
+/Frequency={HH:MM:SS} specifies that the speedtest repeats at the specified interval.
 /MaxRuns={number} lets you specify the maximum number of times the test will run, if you specified a Frequency.";
 
         static async Task Main(string[] args)
@@ -55,8 +55,6 @@ namespace InternetSpeedLogger
 
             if (parsedArgs.Frequency != null)
             {
-                intervalStr = $" Speed tests will be run at intervals of {options.Frequency.ToString("h'h 'm'm 's's'")}{(options.MaxRuns > 0 ? $" a total of {options.MaxRuns} times" : " until you terminate this program")}.";
-
                 var components = parsedArgs.Frequency.Split(':');
                 if (components.Count() != 3)
                 {
@@ -71,8 +69,6 @@ namespace InternetSpeedLogger
                         Console.WriteLine("Only positive integers supported within Frequency argument");
                         return;
                     }
-
-
                     options.Frequency = new TimeSpan(frequencySpecs[0], frequencySpecs[1], frequencySpecs[2]);
                 }
                 catch
@@ -80,6 +76,7 @@ namespace InternetSpeedLogger
                     Console.WriteLine("Something went wrong interpreting the Frequency argument. Please see the /help.");
                     return;
                 }
+                intervalStr = $" Speed tests will be run at intervals of {options.Frequency.ToString("h'h 'm'm 's's'")}{(options.MaxRuns > 0 ? $" a total of {options.MaxRuns} times" : " until you terminate this program")}.";
             }
 
             if (parsedArgs.MaxRuns != null)
