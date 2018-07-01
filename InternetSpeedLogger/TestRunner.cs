@@ -110,7 +110,7 @@ namespace InternetSpeedLogger
                 using (var proc = new Process())
                 {
                     var info = new ProcessStartInfo(_pathToSpeedtestCli);
-                    info.Arguments = "--json --bytes";
+                    info.Arguments = "--json";
                     info.UseShellExecute = false;
                     info.RedirectStandardOutput = true;
                     info.RedirectStandardError = true;
