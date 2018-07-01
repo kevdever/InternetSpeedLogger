@@ -48,11 +48,15 @@ namespace InternetSpeedLogger
             var options = new TestRunnerOptions();
 
             options.Silent = parsedArgs.Silent == true ? true : false;
-            options.HideResults = parsedArgs.HideResults == false ? false : true;
+            options.HideResults = parsedArgs.HideResults == true ? true : false;
             options.ResultRepository = parsedArgs.PersistResults == true ? new Database.ResultRepository() : null;
+
+            string intervalStr = "";
 
             if (parsedArgs.Frequency != null)
             {
+                intervalStr = $" Speed tests will be run at intervals of {options.Frequency.ToString("h'h 'm'm 's's'")}{(options.MaxRuns > 0 ? $" a total of {options.MaxRuns} times" : " until you terminate this program")}.";
+
                 var components = parsedArgs.Frequency.Split(':');
                 if (components.Count() != 3)
                 {
@@ -88,10 +92,9 @@ namespace InternetSpeedLogger
                 options.MaxRuns = (int)parsedArgs.MaxRuns;
             }
 
-            var intervalStr = $" Speed tests will be run at intervals of {options.Frequency.ToString("h'h 'm'm 's's'")}{(options.MaxRuns > 0 ? $" a total of {options.MaxRuns} times" : "until you terminate this program")}.";
             var resultsStr = $" Results will {(options.ResultRepository is null ? "not " : "")}be saved to the database.";
-            var displayStr = $" Results will {(options.HideResults ? "not " : "")}be displayed";
-            var quietStr = $" Silent mode is {(options.Silent ? "" : "not ")}activated";
+            var displayStr = $" Results will {(options.HideResults ? "not " : "")}be displayed.";
+            var quietStr = $" Status messages will {(options.Silent ? "not " : "")}be displayed.";
 
             Console.WriteLine($"Welcome." + intervalStr + resultsStr + displayStr + quietStr);
 

@@ -40,7 +40,7 @@ namespace InternetSpeedLogger.Database
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Something went wrong saving the results to the database: {e.Message}. These results were discarded. Timestamp: {DateTime.Now:T}");
+                    Console.WriteLine($"Something went wrong saving the results to the database: {ExceptionHelpers.ConcatInnerExceptions(e)} These results were discarded. Timestamp: {DateTime.Now:T}");
                 }
             }
         }
