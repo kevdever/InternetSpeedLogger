@@ -11,6 +11,7 @@ namespace InternetSpeedLogger.Models
 {
     public class Server
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
         public string Url { get; set; }
         [JsonProperty(propertyName: "lat")]
