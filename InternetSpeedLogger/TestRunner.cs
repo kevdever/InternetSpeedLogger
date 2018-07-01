@@ -68,7 +68,7 @@ namespace InternetSpeedLogger
                     if (model is null)
                         return;
 
-                    await _options.ResultRepository.AddResult(model);
+                    await _options.ResultRepository.AddResult(model).ConfigureAwait(false);
                     if (!_silent)
                         Console.WriteLine("Results saved.");
                 };
@@ -91,7 +91,7 @@ namespace InternetSpeedLogger
                     tcs.SetResult(Task.CompletedTask);
                 };
                 _timer.Start();
-                await tcs.Task;
+                await tcs.Task.ConfigureAwait(false);
             }
         }
 
@@ -116,7 +116,7 @@ namespace InternetSpeedLogger
                     info.RedirectStandardError = true;
                     proc.StartInfo = info;
                     proc.Start();
-                    jsonResult = await proc.StandardOutput.ReadToEndAsync();
+                    jsonResult = await proc.StandardOutput.ReadToEndAsync().ConfigureAwait(false);
                     
                 }
             }
