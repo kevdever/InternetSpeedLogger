@@ -33,6 +33,8 @@ namespace InternetSpeedLogger
 
         public TestRunner(TestRunnerOptions options)
         {
+            _options = options;
+
             _options.CancellationToken.Register(() => {
                 _timer?.Stop();
             });
@@ -40,7 +42,6 @@ namespace InternetSpeedLogger
             var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             _pathToSpeedtestCli = config.AppSettings.Settings["SpeedtestPath"].Value;
 
-            _options = options;
             _silent = options.Silent;
 
             if (_options.Frequency != default)
