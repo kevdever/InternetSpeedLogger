@@ -3,7 +3,9 @@ namespace InternetSpeedLogger.Migrations
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
+    using System.IO;
     using System.Linq;
+    using System.Reflection;
 
     internal sealed class Configuration : DbMigrationsConfiguration<InternetSpeedLogger.Database.SqlServerDb>
     {
